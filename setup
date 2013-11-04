@@ -1,0 +1,116 @@
+#!/bin/bash
+
+# Make sure there's a first argument.
+if [ -z "$1" ]
+    then
+        echo 'Please supply a name for your django project'
+        exit 1
+fi
+
+# Install heroku
+wget --no-check-certificate https://toolbelt.heroku.com/install.sh
+sh install.sh
+rm install.sh
+
+# Add heroku to your path
+export PATH="/usr/local/heroku/bin:$PATH"
+echo 'export PATH="/usr/local/heroku/bin:$PATH"' >> ~/.bashrc
+
+# Install foreman
+sudo gem install foreman
+
+# Install git
+sudo yum -y install git
+
+# Install pip
+wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py
+sudo python ez_setup.py
+wget https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+sudo python get-pip.py
+rm ez_setup.py
+rm get-pip.py
+rm setuptools-1.*
+
+# Install virtualenv
+sudo pip install virtualenv
+
+# Install postgres devel (called libpq-dev for apt-get)
+sudo yum -y install postgresql-devel
+
+# Install python-devel (called python-dev for apt-get)
+sudo yum -y install python-devel
+
+# Create the project.
+mkdir $1 && cd $1
+virtualenv venv --no-site-packages
+source venv/bin/activate
+sudo pip install django-toolbelt
+
+# Create a project
+django-admin.py startproject project .
+
+# Make manage.py executable
+chmod u+x manage.py
+
+# Declare a Procfile
+echo "web: gunicorn project.wsgi" >> Procfile
+
+# Freeze your requirements.
+pip freeze > requirements.txt
+
+# Add the following to the project settings file.
+echo '# Parse database configuration from $DATABASE_URL' >> project/settings.py
+echo 'import dj_database_url' >> project/settings.py
+echo 'DATABASES["default"] =  dj_database_url.config()' >> project/settings.py
+echo '' >> project/settings.py
+echo '# Honor the 'X-Forwarded-Proto' header for request.is_secure()' >> project/settings.py
+echo 'SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")' >> project/settings.py
+echo '' >> project/settings.py
+echo '# Allow all host headers' >> project/settings.py
+echo 'ALLOWED_HOSTS = ["*"]' >> project/settings.py
+echo '' >> project/settings.py
+echo '# Static asset configuration' >> project/settings.py
+echo 'import os' >> project/settings.py
+echo 'BASE_DIR = os.path.dirname(os.path.abspath(__file__))' >> project/settings.py
+echo 'STATIC_ROOT = "staticfiles"' >> project/settings.py
+echo 'STATIC_URL = "/static/"' >> project/settings.py
+echo '' >> project/settings.py
+echo 'STATICFILES_DIRS = (' >> project/settings.py
+echo '    os.path.join(BASE_DIR, "static"),' >> project/settings.py
+echo ')' >> project/settings.py
+echo '' >> project/settings.py
+
+# Add the following the project wsgi file.
+echo 'from django.core.wsgi import get_wsgi_application' >> project/wsgi.py
+echo 'from dj_static import Cling' >> project/wsgi.py
+echo '' >> project/wsgi.py
+echo 'application = Cling(get_wsgi_application())' >> project/wsgi.py
+echo '' >> project/wsgi.py
+
+# Create a git ignore file.
+echo 'venv' >> .gitignore
+echo '*.pyc' >> .gitignore
+echo 'statifiles' >> .gitignore
+
+# Create a git repo and initialize it.
+git init
+git add .
+git commit -m "Initial commit."
+
+# Create your heroku app
+heroku create
+
+# Add keys
+heroku keys:add
+
+# Deploy it.
+git push heroku master
+
+# Back out of the directory.
+cd ..
+
+echo ''
+echo ''
+echo 'Done.'
+
+exit 0
