@@ -1,7 +1,7 @@
 setup-heroku-django
 ===================
 
-This is a bash script that creates a django project for heroku. Since setting everything up correctly for heroku is somewhat complicated, this script automates the task. It installs and sets up everything. Basically, if you want to create a django project and deploy it to heroku, you create a folder to house it, copy the `setup` script into that folder, then run the `setup` script. After that, you should have a live (empty) django site on heroku that you can build from.
+This is a bash script that creates a django project for heroku. Since setting everything up correctly for heroku is somewhat complicated, this script automates the task. It installs and sets up everything. Basically, if you want to create a django project and deploy it to heroku, you create a folder to house it, copy the `setup` script into that folder, then run the `setup` script. After that, you should have a live (empty) django site on heroku that you can work on.
 
 
 Requirements
