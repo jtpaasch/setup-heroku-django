@@ -30,7 +30,7 @@ What it does
 
 The `setup` script is a bash script that does the following:
 
-* It installs all the relevant software you need to build and deploy a site with django.
+* It installs all the relevant software you need to build and deploy a django site with heroku.
 * It sets up an empty django project and configures it for heroku.
 * Finally, it actually deploys your empty project to heroku. 
 
