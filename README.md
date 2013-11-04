@@ -7,7 +7,9 @@ This is a bash script that creates a django project for heroku. Since setting ev
 Requirements
 ------------
 
-This script only works in a CentOS environment. However, it should be easy to edit the script to use apt-get rather than yum, and then it should work fine on Ubuntu. 
+* CentOS: This script only works in a CentOS environment. However, it should be easy to edit the script to use apt-get rather than yum, and then it should work fine on Ubuntu.
+* Git: This script assumes you have git installed on your system.
+* A heroku account: This script will ask for your heroku credentials at some point.
 
 
 Usage
